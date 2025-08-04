@@ -339,7 +339,7 @@ namespace XianXiaGame.Editor
             textRect.offsetMax = new Vector2(-10, 0);
             
             TextMeshProUGUI textComp = text.GetComponent<TextMeshProUGUI>();
-            textComp.alignment = TextAlignmentOptions.MiddleLeft;
+            textComp.alignment = TextAlignmentOptions.MidlineLeft;
             
             // 保存预制件
             string prefabPath = m_PrefabPath + "EquipmentSlot.prefab";
@@ -453,7 +453,7 @@ namespace XianXiaGame.Editor
             textComp.text = text;
             textComp.fontSize = fontSize;
             textComp.color = Color.white;
-            textComp.alignment = TextAlignmentOptions.MiddleCenter;
+            textComp.alignment = TextAlignmentOptions.Center;
             
             return textGO;
         }

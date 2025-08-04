@@ -507,7 +507,7 @@ namespace XianXiaGame.Editor
             textComp.text = text;
             textComp.fontSize = fontSize;
             textComp.color = Color.white;
-            textComp.alignment = TextAlignmentOptions.MiddleCenter;
+            textComp.alignment = TextAlignmentOptions.Center;
             
             return textGO;
         }
