@@ -194,7 +194,7 @@ namespace XianXiaGame
             textComponent.fontSize = 12;
             textComponent.color = Color.white;
             textComponent.alignment = TextAlignmentOptions.TopLeft;
-            textComponent.wordWrapping = true;
+            textComponent.enableWordWrapping = true;
             
             return textGO;
         }
