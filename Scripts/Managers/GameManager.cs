@@ -73,35 +73,9 @@ namespace XianXiaGame
         [SerializeField] private RandomItemGenerator m_ItemGenerator;
         #endregion
 
-        #region 探索消息配置
-        [Header("探索消息配置")]
-        [SerializeField] private string[] m_ExploreMessages = 
-        {
-            "你在一片废墟中挖掘着...",
-            "你沿着山间小径前行...",
-            "你在密林深处搜寻着...",
-            "你来到了一处神秘的洞穴...",
-            "你发现了一个古老的祭坛...",
-            "你在湖边发现了可疑的痕迹..."
-        };
-
-        [SerializeField] private string[] m_TreasureMessages = 
-        {
-            "你发现了一个古老的宝箱！",
-            "在岩石缝隙中，你找到了宝藏！",
-            "一个闪闪发光的物体吸引了你的注意！",
-            "你意外挖到了埋藏的宝物！",
-            "洞穴深处传来了宝光！"
-        };
-
-        [SerializeField] private string[] m_BattleMessages = 
-        {
-            "一个敌人突然出现了！",
-            "你遭到了袭击！",
-            "危险的气息逼近...",
-            "敌人发现了你！",
-            "战斗不可避免！"
-        };
+        #region 探索消息配置 - 已迁移到MessageConfig
+        // 注意：消息配置已迁移到MessageConfig系统
+        // 这些字段保留用于向后兼容，建议使用MessageManager.GetRandomMessage()
         #endregion
 
         #region 公共属性
@@ -246,7 +220,7 @@ namespace XianXiaGame
 
             m_IsGameInitialized = true;
 
-            SendGameMessage("欢迎来到仙侠世界！开始你的修仙之路吧！");
+            SendGameMessage(MessageManager.GetMessage("welcome"));
             Debug.Log("新游戏开始");
         }
 
@@ -436,20 +410,18 @@ namespace XianXiaGame
         /// </summary>
         private void HandleNothingFound()
         {
-            string[] nothingMessages = 
+            // 使用MessageConfig系统获取随机消息
+            string message = MessageManager.GetRandomMessage(MessageCategory.Exploration);
+            if (string.IsNullOrEmpty(message))
             {
-                "这里似乎什么都没有...",
-                "一无所获，继续探索吧。",
-                "空手而归，不过经验还是有所增长。",
-                "虽然没有收获，但你对这片区域更加熟悉了。"
-            };
-
-            string message = nothingMessages[UnityEngine.Random.Range(0, nothingMessages.Length)];
+                // 回退消息
+                message = "这里似乎什么都没有...";
+            }
             SendGameMessage(message);
 
             // 给予少量经验（使用配置中的数值）
             var config = ConfigManager.Instance?.Config?.Exploration;
-            int expReward = config?.NothingFoundExp ?? 5;
+            int expReward = config?.NothingFoundExp ?? GameConstants.Exploration.NOTHING_FOUND_EXP;
             m_PlayerStats.GainExperience(expReward);
         }
 
@@ -524,11 +496,11 @@ namespace XianXiaGame
             {
                 case BattleResult.Victory:
                     m_BattleWins++;
-                    SendGameMessage("战斗胜利！继续你的探索之路吧！");
+                    SendGameMessage(MessageManager.GetMessage("battle_victory"));
                     break;
 
                 case BattleResult.Defeat:
-                    SendGameMessage("战斗失败了...休息一下再继续吧。");
+                    SendGameMessage(MessageManager.GetMessage("battle_defeat"));
                     // 失败惩罚：失去一些金钱（使用配置中的数值）
                     var battleConfig = ConfigManager.Instance?.Config?.Battle;
                     float lossPercentage = battleConfig?.GoldLossPercentage ?? 0.1f;
@@ -543,7 +515,7 @@ namespace XianXiaGame
                     break;
 
                 case BattleResult.Escape:
-                    SendGameMessage("成功逃脱了战斗！");
+                    SendGameMessage(MessageManager.GetMessage("battle_escape"));
                     break;
             }
 
@@ -597,7 +569,7 @@ namespace XianXiaGame
             PlayerPrefs.SetInt("TreasuresFound", m_TreasuresFound);
             
             PlayerPrefs.Save();
-            SendGameMessage("游戏已保存！");
+            SendGameMessage(MessageManager.GetMessage("game_saved"));
         }
 
         /// <summary>
@@ -622,11 +594,11 @@ namespace XianXiaGame
                 m_IsGameInitialized = true;
                 ChangeGameState(GameState.Exploring);
                 
-                SendGameMessage("游戏数据加载完成！");
+                SendGameMessage(MessageManager.GetMessage("game_loaded"));
             }
             else
             {
-                SendGameMessage("没有找到存档数据。");
+                SendGameMessage(MessageManager.GetMessage("error_load"));
             }
         }
         #endregion
