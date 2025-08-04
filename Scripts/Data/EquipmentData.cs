@@ -271,5 +271,101 @@ namespace XianXiaGame
             }
         }
         #endregion
+
+        #region 扩展方法
+        /// <summary>
+        /// 设置装备属性加成（用于数据驱动的物品模板）
+        /// </summary>
+        public void SetBonusStats(CharacterStats bonusStats)
+        {
+            if (bonusStats != null)
+            {
+                m_BonusStats = bonusStats.Clone();
+            }
+        }
+
+        /// <summary>
+        /// 修改装备基础信息（用于动态创建装备）
+        /// </summary>
+        public void SetEquipmentInfo(string name, string description, EquipmentType equipmentType, 
+            ItemRarity rarity, int value, int requiredLevel, CharacterStats bonusStats)
+        {
+            SetItemInfo(name, description, ItemType.Equipment, rarity, value, 1);
+            m_EquipmentType = equipmentType;
+            m_RequiredLevel = requiredLevel;
+            if (bonusStats != null)
+            {
+                m_BonusStats = bonusStats.Clone();
+            }
+        }
+
+        /// <summary>
+        /// 添加属性加成（累加方式）
+        /// </summary>
+        public void AddBonusStats(CharacterStats additionalStats)
+        {
+            if (additionalStats != null)
+            {
+                m_BonusStats.AddStats(additionalStats);
+            }
+        }
+
+        /// <summary>
+        /// 检查装备是否可以被角色使用
+        /// </summary>
+        public bool CanBeUsedBy(CharacterStats characterStats)
+        {
+            return characterStats != null && characterStats.Level >= m_RequiredLevel;
+        }
+
+        /// <summary>
+        /// 获取装备的详细属性信息
+        /// </summary>
+        public override string GetDetailedInfo()
+        {
+            string baseInfo = base.GetDetailedInfo();
+            
+            // 添加装备特有信息
+            string equipmentInfo = $"\n\n装备类型：{GetEquipmentTypeText()}\n" +
+                                 $"需要等级：{m_RequiredLevel}\n\n" +
+                                 "属性加成：\n";
+
+            if (m_BonusStats.MaxHealth > 0)
+                equipmentInfo += $"生命值 +{m_BonusStats.MaxHealth}\n";
+            if (m_BonusStats.MaxMana > 0)
+                equipmentInfo += $"法力值 +{m_BonusStats.MaxMana}\n";
+            if (m_BonusStats.Attack > 0)
+                equipmentInfo += $"攻击力 +{m_BonusStats.Attack}\n";
+            if (m_BonusStats.Defense > 0)
+                equipmentInfo += $"防御力 +{m_BonusStats.Defense}\n";
+            if (m_BonusStats.Speed > 0)
+                equipmentInfo += $"速度 +{m_BonusStats.Speed}\n";
+            if (m_BonusStats.CriticalRate > 0)
+                equipmentInfo += $"暴击率 +{(m_BonusStats.CriticalRate * 100):F1}%\n";
+            if (m_BonusStats.CriticalDamage > 0)
+                equipmentInfo += $"暴击伤害 +{(m_BonusStats.CriticalDamage * 100):F1}%\n";
+            if (m_BonusStats.Luck > 0)
+                equipmentInfo += $"运气 +{m_BonusStats.Luck}\n";
+
+            return baseInfo + equipmentInfo;
+        }
+
+        /// <summary>
+        /// 获取装备类型文本
+        /// </summary>
+        private string GetEquipmentTypeText()
+        {
+            switch (m_EquipmentType)
+            {
+                case EquipmentType.Weapon: return "武器";
+                case EquipmentType.Helmet: return "头盔";
+                case EquipmentType.Armor: return "护甲";
+                case EquipmentType.Boots: return "靴子";
+                case EquipmentType.Ring: return "戒指";
+                case EquipmentType.Necklace: return "项链";
+                default: return "未知";
+            }
+        }
+        #endregion
     }
 }
