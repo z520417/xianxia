@@ -509,6 +509,13 @@ namespace XianXiaGame.Editor
             textComp.color = Color.white;
             textComp.alignment = TextAlignmentOptions.Center;
             
+            // 尝试应用中文字体
+            TMP_FontAsset chineseFont = UIFontUpdater.GetDefaultChineseFont();
+            if (chineseFont != null)
+            {
+                textComp.font = chineseFont;
+            }
+            
             return textGO;
         }
         
