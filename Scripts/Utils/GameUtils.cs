@@ -369,21 +369,23 @@ namespace XianXiaGame.Utils
         /// <summary>
         /// 创建测试角色数据
         /// </summary>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+#if UNITY_EDITOR
         public static CharacterStats CreateTestCharacterStats(int level = 10)
         {
             return new CharacterStats(level);
         }
+#endif
 
         /// <summary>
         /// 创建测试物品
         /// </summary>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+#if UNITY_EDITOR
         public static EquipmentData CreateTestEquipment(EquipmentType type = EquipmentType.Weapon, 
             ItemRarity rarity = ItemRarity.Rare, int level = 10)
         {
             return EquipmentData.GenerateRandomEquipment(type, rarity, level);
         }
+#endif
 
         #endregion
     }
