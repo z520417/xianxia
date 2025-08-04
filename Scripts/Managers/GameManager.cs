@@ -589,7 +589,7 @@ namespace XianXiaGame
                 int exp = PlayerPrefs.GetInt("PlayerExp", 0);
                 
                 m_PlayerStats = new CharacterStats(level);
-                m_PlayerStats.m_Experience = exp;
+                m_PlayerStats.SetExperience(exp);
                 
                 m_Gold = PlayerPrefs.GetInt("Gold", 1000);
                 m_ExplorationCount = PlayerPrefs.GetInt("ExplorationCount", 0);

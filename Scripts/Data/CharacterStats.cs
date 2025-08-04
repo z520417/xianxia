@@ -292,6 +292,23 @@ namespace XianXiaGame
                     break;
             }
         }
+
+        /// <summary>
+        /// 设置经验值（用于存档加载等）
+        /// </summary>
+        public void SetExperience(int _experience)
+        {
+            m_Experience = _experience;
+        }
+
+        /// <summary>
+        /// 设置等级（用于存档加载等）
+        /// </summary>
+        public void SetLevel(int _level)
+        {
+            m_Level = _level;
+            CalculateStatsForLevel();
+        }
         #endregion
     }
 }
