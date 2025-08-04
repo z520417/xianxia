@@ -83,7 +83,7 @@ namespace XianXiaGame.Editor
                     GameObject found = FindUIElementByName(root, field.Name);
                     if (found != null)
                     {
-                        Component component = GetRequiredComponent(found, field.FieldType);
+                        object component = GetRequiredComponent(found, field.FieldType);
                         if (component != null)
                         {
                             field.SetValue(m_TargetUI, component);
@@ -169,7 +169,7 @@ namespace XianXiaGame.Editor
             return null;
         }
         
-        private Component GetRequiredComponent(GameObject obj, System.Type requiredType)
+        private object GetRequiredComponent(GameObject obj, System.Type requiredType)
         {
             if (requiredType == typeof(GameObject))
             {
