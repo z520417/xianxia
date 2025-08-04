@@ -237,20 +237,17 @@ namespace XianXiaGame
         {
             ItemData material = ScriptableObject.CreateInstance<ItemData>();
             
-            // 设置基础属性
-            material.m_ItemType = ItemType.Material;
-            material.m_Rarity = _rarity;
-            
             // 根据稀有度选择名称
             int nameIndex = Mathf.Min((int)_rarity, m_MaterialNames.Length - 1);
-            material.m_ItemName = m_MaterialNames[nameIndex];
-            material.m_Description = m_MaterialDescriptions[nameIndex];
+            string name = m_MaterialNames[nameIndex];
+            string description = m_MaterialDescriptions[nameIndex];
             
-            // 设置价值
-            material.m_Value = CalculateMaterialValue(_rarity, _playerLevel);
+            // 计算价值和堆叠数量
+            int value = CalculateMaterialValue(_rarity, _playerLevel);
+            int maxStackSize = GetMaterialStackSize(_rarity);
             
-            // 设置堆叠数量
-            material.m_MaxStackSize = GetMaterialStackSize(_rarity);
+            // 设置基础属性
+            material.SetItemInfo(name, description, ItemType.Material, _rarity, value, maxStackSize);
             
             return material;
         }
@@ -262,20 +259,19 @@ namespace XianXiaGame
         {
             ItemData treasure = ScriptableObject.CreateInstance<ItemData>();
             
-            // 设置基础属性
-            treasure.m_ItemType = ItemType.Treasure;
-            treasure.m_Rarity = _rarity;
-            
             // 根据稀有度选择名称
             int nameIndex = Mathf.Min((int)_rarity, m_TreasureNames.Length - 1);
-            treasure.m_ItemName = m_TreasureNames[nameIndex];
-            treasure.m_Description = m_TreasureDescriptions[nameIndex];
+            string name = m_TreasureNames[nameIndex];
+            string description = m_TreasureDescriptions[nameIndex];
             
-            // 设置价值（珍宝价值较高）
-            treasure.m_Value = CalculateTreasureValue(_rarity, _playerLevel);
+            // 计算价值（珍宝价值较高）
+            int value = CalculateTreasureValue(_rarity, _playerLevel);
             
             // 珍宝通常不堆叠或少量堆叠
-            treasure.m_MaxStackSize = _rarity >= ItemRarity.Rare ? 1 : Random.Range(1, 5);
+            int maxStackSize = _rarity >= ItemRarity.Rare ? 1 : Random.Range(1, 5);
+            
+            // 设置基础属性
+            treasure.SetItemInfo(name, description, ItemType.Treasure, _rarity, value, maxStackSize);
             
             return treasure;
         }

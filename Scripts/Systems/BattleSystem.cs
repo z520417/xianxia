@@ -532,11 +532,7 @@ namespace XianXiaGame
             
             // 根据等级调整敌人属性
             float difficultyMultiplier = UnityEngine.Random.Range(0.8f, 1.2f);
-            enemyStats.m_MaxHealth = Mathf.RoundToInt(enemyStats.MaxHealth * difficultyMultiplier);
-            enemyStats.m_CurrentHealth = enemyStats.MaxHealth;
-            enemyStats.m_Attack = Mathf.RoundToInt(enemyStats.Attack * difficultyMultiplier);
-            enemyStats.m_Defense = Mathf.RoundToInt(enemyStats.Defense * difficultyMultiplier);
-            enemyStats.m_Speed = Mathf.RoundToInt(enemyStats.Speed * difficultyMultiplier);
+            enemyStats.ModifyStats(difficultyMultiplier, difficultyMultiplier, difficultyMultiplier, difficultyMultiplier);
 
             return new BattleParticipant(enemyName, enemyStats, false);
         }

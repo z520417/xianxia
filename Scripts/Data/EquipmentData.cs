@@ -115,38 +115,47 @@ namespace XianXiaGame
             int totalPoints = Mathf.RoundToInt(Random.Range(8f, 15f) * totalMultiplier);
             
             // 分配属性
-            stats.m_MaxHealth = Random.Range(0, totalPoints / 4) * 5;
-            totalPoints -= stats.m_MaxHealth / 5;
+            int healthBonus = Random.Range(0, totalPoints / 4) * 5;
+            totalPoints -= healthBonus / 5;
             
-            stats.m_MaxMana = Random.Range(0, totalPoints / 3) * 3;
-            totalPoints -= stats.m_MaxMana / 3;
+            int manaBonus = Random.Range(0, totalPoints / 3) * 3;
+            totalPoints -= manaBonus / 3;
             
-            stats.m_Attack = Random.Range(0, totalPoints / 2) * 2;
-            totalPoints -= stats.m_Attack / 2;
+            int attackBonus = Random.Range(0, totalPoints / 2) * 2;
+            totalPoints -= attackBonus / 2;
             
-            stats.m_Defense = Random.Range(0, totalPoints) * 1;
-            totalPoints -= stats.m_Defense;
+            int defenseBonus = Random.Range(0, totalPoints) * 1;
+            totalPoints -= defenseBonus;
             
-            stats.m_Speed = totalPoints;
+            int speedBonus = totalPoints;
+            
+            // 初始化特殊属性
+            float criticalRateBonus = 0f;
+            float criticalDamageBonus = 0f;
+            int luckBonus = 0;
             
             // 稀有装备有概率获得特殊属性
             if (_rarity >= ItemRarity.Rare)
             {
                 if (Random.Range(0f, 1f) < 0.3f)
                 {
-                    stats.m_CriticalRate = Random.Range(0.01f, 0.05f) * (int)_rarity;
+                    criticalRateBonus = Random.Range(0.01f, 0.05f) * (int)_rarity;
                 }
                 
                 if (Random.Range(0f, 1f) < 0.3f)
                 {
-                    stats.m_CriticalDamage = Random.Range(0.1f, 0.3f) * (int)_rarity;
+                    criticalDamageBonus = Random.Range(0.1f, 0.3f) * (int)_rarity;
                 }
                 
                 if (Random.Range(0f, 1f) < 0.2f)
                 {
-                    stats.m_Luck = Random.Range(1, 5) * (int)_rarity;
+                    luckBonus = Random.Range(1, 5) * (int)_rarity;
                 }
             }
+            
+            // 使用SetStats方法设置属性
+            stats.SetStats(healthBonus, manaBonus, attackBonus, defenseBonus, speedBonus, 
+                           criticalRateBonus, criticalDamageBonus, luckBonus);
             
             return stats;
         }

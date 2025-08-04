@@ -217,9 +217,15 @@ namespace XianXiaGame
             // 恢复法力值
             if (m_ManaRestore > 0)
             {
-                // 这里需要在CharacterStats中添加恢复法力值的方法
-                Debug.Log($"恢复了 {m_ManaRestore} 点法力值");
-                hasEffect = true;
+                int oldMana = _characterStats.CurrentMana;
+                _characterStats.RestoreMana(m_ManaRestore);
+                int restoredAmount = _characterStats.CurrentMana - oldMana;
+                
+                if (restoredAmount > 0)
+                {
+                    Debug.Log($"恢复了 {restoredAmount} 点法力值");
+                    hasEffect = true;
+                }
             }
 
             // 获得经验值

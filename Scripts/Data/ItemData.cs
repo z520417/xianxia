@@ -104,6 +104,21 @@ namespace XianXiaGame
         }
         #endregion
 
+        #region 设置方法
+        /// <summary>
+        /// 设置物品基础信息（用于动态创建物品）
+        /// </summary>
+        public void SetItemInfo(string _name, string _description, ItemType _type, ItemRarity _rarity, int _value, int _maxStackSize)
+        {
+            m_ItemName = _name;
+            m_Description = _description;
+            m_ItemType = _type;
+            m_Rarity = _rarity;
+            m_Value = _value;
+            m_MaxStackSize = _maxStackSize;
+        }
+        #endregion
+
         #region 虚拟方法
         /// <summary>
         /// 使用物品（虚拟方法，子类重写）

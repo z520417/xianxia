@@ -11,29 +11,29 @@ namespace XianXiaGame
     {
         #region 基础属性
         [Header("基础属性")]
-        [SerializeField] public int m_Level = 1;                  // 等级
-        [SerializeField] public int m_Experience = 0;             // 经验值
-        [SerializeField] public int m_ExperienceToNext = 100;     // 升级所需经验
+        [SerializeField] private int m_Level = 1;                  // 等级
+        [SerializeField] private int m_Experience = 0;             // 经验值
+        [SerializeField] private int m_ExperienceToNext = 100;     // 升级所需经验
         
-        [SerializeField] public int m_MaxHealth = 100;            // 最大生命值
-        [SerializeField] public int m_CurrentHealth = 100;        // 当前生命值
-        [SerializeField] public int m_MaxMana = 50;               // 最大法力值
-        [SerializeField] public int m_CurrentMana = 50;           // 当前法力值
+        [SerializeField] private int m_MaxHealth = 100;            // 最大生命值
+        [SerializeField] private int m_CurrentHealth = 100;        // 当前生命值
+        [SerializeField] private int m_MaxMana = 50;               // 最大法力值
+        [SerializeField] private int m_CurrentMana = 50;           // 当前法力值
         #endregion
 
         #region 战斗属性
         [Header("战斗属性")]
-        [SerializeField] public int m_Attack = 10;                // 攻击力
-        [SerializeField] public int m_Defense = 5;                // 防御力
-        [SerializeField] public int m_Speed = 10;                 // 速度
-        [SerializeField] public float m_CriticalRate = 0.05f;     // 暴击率
-        [SerializeField] public float m_CriticalDamage = 1.5f;    // 暴击伤害倍数
+        [SerializeField] private int m_Attack = 10;                // 攻击力
+        [SerializeField] private int m_Defense = 5;                // 防御力
+        [SerializeField] private int m_Speed = 10;                 // 速度
+        [SerializeField] private float m_CriticalRate = 0.05f;     // 暴击率
+        [SerializeField] private float m_CriticalDamage = 1.5f;    // 暴击伤害倍数
         #endregion
 
         #region 修炼属性
         [Header("修炼属性")]
-        [SerializeField] public int m_Cultivation = 0;            // 修为
-        [SerializeField] public int m_Luck = 10;                  // 运气值
+        [SerializeField] private int m_Cultivation = 0;            // 修为
+        [SerializeField] private int m_Luck = 10;                  // 运气值
         #endregion
 
         #region 公共属性
@@ -104,14 +104,14 @@ namespace XianXiaGame
         /// </summary>
         public void AddStats(CharacterStats _bonusStats)
         {
-            m_MaxHealth += _bonusStats.m_MaxHealth;
-            m_MaxMana += _bonusStats.m_MaxMana;
-            m_Attack += _bonusStats.m_Attack;
-            m_Defense += _bonusStats.m_Defense;
-            m_Speed += _bonusStats.m_Speed;
-            m_CriticalRate += _bonusStats.m_CriticalRate;
-            m_CriticalDamage += _bonusStats.m_CriticalDamage;
-            m_Luck += _bonusStats.m_Luck;
+            m_MaxHealth += _bonusStats.MaxHealth;
+            m_MaxMana += _bonusStats.MaxMana;
+            m_Attack += _bonusStats.Attack;
+            m_Defense += _bonusStats.Defense;
+            m_Speed += _bonusStats.Speed;
+            m_CriticalRate += _bonusStats.CriticalRate;
+            m_CriticalDamage += _bonusStats.CriticalDamage;
+            m_Luck += _bonusStats.Luck;
         }
 
         /// <summary>
@@ -119,14 +119,14 @@ namespace XianXiaGame
         /// </summary>
         public void RemoveStats(CharacterStats _bonusStats)
         {
-            m_MaxHealth -= _bonusStats.m_MaxHealth;
-            m_MaxMana -= _bonusStats.m_MaxMana;
-            m_Attack -= _bonusStats.m_Attack;
-            m_Defense -= _bonusStats.m_Defense;
-            m_Speed -= _bonusStats.m_Speed;
-            m_CriticalRate -= _bonusStats.m_CriticalRate;
-            m_CriticalDamage -= _bonusStats.m_CriticalDamage;
-            m_Luck -= _bonusStats.m_Luck;
+            m_MaxHealth -= _bonusStats.MaxHealth;
+            m_MaxMana -= _bonusStats.MaxMana;
+            m_Attack -= _bonusStats.Attack;
+            m_Defense -= _bonusStats.Defense;
+            m_Speed -= _bonusStats.Speed;
+            m_CriticalRate -= _bonusStats.CriticalRate;
+            m_CriticalDamage -= _bonusStats.CriticalDamage;
+            m_Luck -= _bonusStats.Luck;
         }
         #endregion
 
@@ -145,6 +145,27 @@ namespace XianXiaGame
         public void TakeDamage(int _damage)
         {
             m_CurrentHealth = Mathf.Max(0, m_CurrentHealth - _damage);
+        }
+
+        /// <summary>
+        /// 恢复法力值
+        /// </summary>
+        public void RestoreMana(int _amount)
+        {
+            m_CurrentMana = Mathf.Min(m_CurrentMana + _amount, m_MaxMana);
+        }
+
+        /// <summary>
+        /// 消耗法力值
+        /// </summary>
+        public bool ConsumeMana(int _amount)
+        {
+            if (m_CurrentMana >= _amount)
+            {
+                m_CurrentMana -= _amount;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -217,6 +238,34 @@ namespace XianXiaGame
             clone.m_Luck = this.m_Luck;
             
             return clone;
+        }
+
+        /// <summary>
+        /// 设置属性值（用于内部修改）
+        /// </summary>
+        public void SetStats(int _maxHealth, int _maxMana, int _attack, int _defense, int _speed, 
+            float _criticalRate, float _criticalDamage, int _luck)
+        {
+            m_MaxHealth = _maxHealth;
+            m_MaxMana = _maxMana;
+            m_Attack = _attack;
+            m_Defense = _defense;
+            m_Speed = _speed;
+            m_CriticalRate = _criticalRate;
+            m_CriticalDamage = _criticalDamage;
+            m_Luck = _luck;
+        }
+
+        /// <summary>
+        /// 调整属性（用于敌人生成等场景）
+        /// </summary>
+        public void ModifyStats(float _healthMultiplier, float _attackMultiplier, float _defenseMultiplier, float _speedMultiplier)
+        {
+            m_MaxHealth = Mathf.RoundToInt(m_MaxHealth * _healthMultiplier);
+            m_CurrentHealth = m_MaxHealth; // 设置当前生命值为最大生命值
+            m_Attack = Mathf.RoundToInt(m_Attack * _attackMultiplier);
+            m_Defense = Mathf.RoundToInt(m_Defense * _defenseMultiplier);
+            m_Speed = Mathf.RoundToInt(m_Speed * _speedMultiplier);
         }
         #endregion
     }
