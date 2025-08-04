@@ -142,19 +142,19 @@ namespace XianXiaGame
                 switch (statType)
                 {
                     case 0: // 攻击力
-                        _consumable.m_TempBonus.m_Attack += Mathf.RoundToInt(buffValue);
+                        _consumable.m_TempBonus.AddSingleStat(0, buffValue);
                         break;
                     case 1: // 防御力
-                        _consumable.m_TempBonus.m_Defense += Mathf.RoundToInt(buffValue);
+                        _consumable.m_TempBonus.AddSingleStat(1, buffValue);
                         break;
                     case 2: // 速度
-                        _consumable.m_TempBonus.m_Speed += Mathf.RoundToInt(buffValue * 0.5f);
+                        _consumable.m_TempBonus.AddSingleStat(2, buffValue * 0.5f);
                         break;
                     case 3: // 暴击率
-                        _consumable.m_TempBonus.m_CriticalRate += buffValue * 0.01f;
+                        _consumable.m_TempBonus.AddSingleStat(3, buffValue * 0.01f);
                         break;
                     case 4: // 运气
-                        _consumable.m_TempBonus.m_Luck += Mathf.RoundToInt(buffValue * 0.3f);
+                        _consumable.m_TempBonus.AddSingleStat(4, buffValue * 0.3f);
                         break;
                 }
             }

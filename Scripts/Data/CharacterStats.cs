@@ -267,6 +267,31 @@ namespace XianXiaGame
             m_Defense = Mathf.RoundToInt(m_Defense * _defenseMultiplier);
             m_Speed = Mathf.RoundToInt(m_Speed * _speedMultiplier);
         }
+
+        /// <summary>
+        /// 添加单个属性值（用于消耗品增益等）
+        /// </summary>
+        public void AddSingleStat(int _statType, float _value)
+        {
+            switch (_statType)
+            {
+                case 0: // 攻击力
+                    m_Attack += Mathf.RoundToInt(_value);
+                    break;
+                case 1: // 防御力
+                    m_Defense += Mathf.RoundToInt(_value);
+                    break;
+                case 2: // 速度
+                    m_Speed += Mathf.RoundToInt(_value);
+                    break;
+                case 3: // 暴击率
+                    m_CriticalRate += _value;
+                    break;
+                case 4: // 运气
+                    m_Luck += Mathf.RoundToInt(_value);
+                    break;
+            }
+        }
         #endregion
     }
 }
