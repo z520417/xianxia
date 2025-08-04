@@ -333,6 +333,68 @@ namespace XianXiaGame
             m_Level = _level;
             CalculateStatsForLevel();
         }
+
+        /// <summary>
+        /// 乘法修改属性
+        /// </summary>
+        public void MultiplyStats(float multiplier)
+        {
+            m_MaxHealth = Mathf.RoundToInt(m_MaxHealth * multiplier);
+            m_MaxMana = Mathf.RoundToInt(m_MaxMana * multiplier);
+            m_Attack = Mathf.RoundToInt(m_Attack * multiplier);
+            m_Defense = Mathf.RoundToInt(m_Defense * multiplier);
+            m_Speed = Mathf.RoundToInt(m_Speed * multiplier);
+            
+            // 保持当前血量和法力值的比例
+            float healthRatio = (float)m_CurrentHealth / m_MaxHealth;
+            float manaRatio = (float)m_CurrentMana / m_MaxMana;
+            
+            m_CurrentHealth = Mathf.RoundToInt(m_MaxHealth * healthRatio);
+            m_CurrentMana = Mathf.RoundToInt(m_MaxMana * manaRatio);
+        }
+
+        /// <summary>
+        /// 多参数属性修改
+        /// </summary>
+        public void ModifyStats(float health = 1f, float mana = 1f, float attack = 1f, 
+                               float defense = 1f, float speed = 1f)
+        {
+            m_MaxHealth = Mathf.RoundToInt(m_MaxHealth * health);
+            m_MaxMana = Mathf.RoundToInt(m_MaxMana * mana);
+            m_Attack = Mathf.RoundToInt(m_Attack * attack);
+            m_Defense = Mathf.RoundToInt(m_Defense * defense);
+            m_Speed = Mathf.RoundToInt(m_Speed * speed);
+            
+            // 保持当前血量和法力值的比例
+            float healthRatio = (float)m_CurrentHealth / m_MaxHealth;
+            float manaRatio = (float)m_CurrentMana / m_MaxMana;
+            
+            m_CurrentHealth = Mathf.RoundToInt(m_MaxHealth * healthRatio);
+            m_CurrentMana = Mathf.RoundToInt(m_MaxMana * manaRatio);
+        }
+
+        /// <summary>
+        /// 复制构造函数
+        /// </summary>
+        public CharacterStats(CharacterStats other)
+        {
+            if (other == null) return;
+            
+            m_Level = other.m_Level;
+            m_Experience = other.m_Experience;
+            m_ExperienceToNext = other.m_ExperienceToNext;
+            m_MaxHealth = other.m_MaxHealth;
+            m_CurrentHealth = other.m_CurrentHealth;
+            m_MaxMana = other.m_MaxMana;
+            m_CurrentMana = other.m_CurrentMana;
+            m_Attack = other.m_Attack;
+            m_Defense = other.m_Defense;
+            m_Speed = other.m_Speed;
+            m_CriticalRate = other.m_CriticalRate;
+            m_CriticalDamage = other.m_CriticalDamage;
+            m_Cultivation = other.m_Cultivation;
+            m_Luck = other.m_Luck;
+        }
         #endregion
     }
 }
