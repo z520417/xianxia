@@ -101,7 +101,7 @@ namespace XianXiaGame
 
         #region 背包配置
         [Header("背包配置")]
-        [SerializeField] private int m_MaxSlots = 50;              // 最大槽位数量
+        [SerializeField] private int m_MaxSlots = 50;              // 最大槽位数量（可被配置覆盖）
         [SerializeField] private List<ItemSlot> m_ItemSlots;       // 物品槽位列表
         #endregion
 
@@ -115,11 +115,24 @@ namespace XianXiaGame
         #region Unity生命周期
         private void Awake()
         {
+            UpdateConfigValues();
             InitializeInventory();
         }
         #endregion
 
         #region 初始化方法
+        /// <summary>
+        /// 从配置管理器更新背包参数
+        /// </summary>
+        private void UpdateConfigValues()
+        {
+            var config = ConfigManager.Instance?.Config?.Inventory;
+            if (config != null)
+            {
+                m_MaxSlots = config.DefaultMaxSlots;
+            }
+        }
+
         /// <summary>
         /// 初始化背包
         /// </summary>
@@ -141,6 +154,33 @@ namespace XianXiaGame
             {
                 m_ItemSlots.RemoveAt(m_ItemSlots.Count - 1);
             }
+        }
+
+        /// <summary>
+        /// 升级背包容量
+        /// </summary>
+        public bool UpgradeInventorySlots(int _additionalSlots)
+        {
+            var config = ConfigManager.Instance?.Config?.Inventory;
+            int maxUpgradeSlots = config?.MaxUpgradeSlots ?? 100;
+            
+            if (m_MaxSlots + _additionalSlots <= maxUpgradeSlots)
+            {
+                m_MaxSlots += _additionalSlots;
+                
+                // 添加新的空槽位
+                for (int i = 0; i < _additionalSlots; i++)
+                {
+                    m_ItemSlots.Add(new ItemSlot());
+                }
+                
+                OnInventoryChanged?.Invoke(-1);
+                Debug.Log($"背包容量提升到 {m_MaxSlots} 个槽位");
+                return true;
+            }
+            
+            Debug.LogWarning($"背包容量已达到上限 {maxUpgradeSlots}");
+            return false;
         }
         #endregion
 

@@ -73,16 +73,8 @@ namespace XianXiaGame
         [SerializeField] private RandomItemGenerator m_ItemGenerator;
         #endregion
 
-        #region 探索配置
-        [Header("探索配置")]
-        [SerializeField] private float[] m_ExploreEventChances = 
-        {
-            30f,    // 发现宝藏
-            40f,    // 遭遇战斗
-            20f,    // 发现物品
-            10f     // 什么都没有
-        };
-
+        #region 探索消息配置
+        [Header("探索消息配置")]
         [SerializeField] private string[] m_ExploreMessages = 
         {
             "你在一片废墟中挖掘着...",
@@ -325,8 +317,29 @@ namespace XianXiaGame
         {
             yield return new WaitForSeconds(1f);
 
+            // 从配置获取事件概率，如果配置不可用则使用默认值
+            var config = ConfigManager.Instance?.Config?.Exploration;
+            float[] eventChances;
+            
+            if (config != null)
+            {
+                eventChances = new float[]
+                {
+                    config.TreasureChance,
+                    config.BattleChance,
+                    config.ItemChance,
+                    config.NothingChance
+                };
+            }
+            else
+            {
+                // 默认概率
+                eventChances = new float[] { 30f, 40f, 20f, 10f };
+                Debug.LogWarning("GameManager: 探索配置不可用，使用默认概率");
+            }
+
             // 根据权重随机选择事件
-            int eventType = GetWeightedRandomIndex(m_ExploreEventChances);
+            int eventType = GetWeightedRandomIndex(eventChances);
 
             switch (eventType)
             {
@@ -368,8 +381,11 @@ namespace XianXiaGame
                     m_InventorySystem.AddItem(treasure);
                 }
 
-                // 获得一些灵石
-                int goldReward = UnityEngine.Random.Range(50, 200) * m_PlayerStats.Level;
+                // 获得一些灵石（使用配置中的数值）
+                var config = ConfigManager.Instance?.Config?.Exploration;
+                int minGold = config?.MinGoldReward ?? 50;
+                int maxGold = config?.MaxGoldReward ?? 200;
+                int goldReward = UnityEngine.Random.Range(minGold, maxGold + 1) * m_PlayerStats.Level;
                 AddGold(goldReward);
 
                 SendGameMessage($"获得了 {treasures.Count} 个宝物和 {goldReward} 灵石！");
@@ -386,8 +402,10 @@ namespace XianXiaGame
 
             if (m_BattleSystem != null)
             {
-                // 敌人等级在玩家等级±2范围内
-                int enemyLevel = m_PlayerStats.Level + UnityEngine.Random.Range(-2, 3);
+                // 敌人等级在玩家等级±配置范围内
+                var battleConfig = ConfigManager.Instance?.Config?.Battle;
+                int levelVariance = battleConfig?.EnemyLevelVariance ?? 2;
+                int enemyLevel = m_PlayerStats.Level + UnityEngine.Random.Range(-levelVariance, levelVariance + 1);
                 enemyLevel = Mathf.Max(1, enemyLevel);
 
                 // 获取当前总属性（包括装备加成）
@@ -429,8 +447,10 @@ namespace XianXiaGame
             string message = nothingMessages[UnityEngine.Random.Range(0, nothingMessages.Length)];
             SendGameMessage(message);
 
-            // 给予少量经验
-            m_PlayerStats.GainExperience(5);
+            // 给予少量经验（使用配置中的数值）
+            var config = ConfigManager.Instance?.Config?.Exploration;
+            int expReward = config?.NothingFoundExp ?? 5;
+            m_PlayerStats.GainExperience(expReward);
         }
 
         /// <summary>
@@ -509,8 +529,11 @@ namespace XianXiaGame
 
                 case BattleResult.Defeat:
                     SendGameMessage("战斗失败了...休息一下再继续吧。");
-                    // 失败惩罚：失去一些金钱
-                    int lostGold = Mathf.Min(m_Gold / 10, 100);
+                    // 失败惩罚：失去一些金钱（使用配置中的数值）
+                    var battleConfig = ConfigManager.Instance?.Config?.Battle;
+                    float lossPercentage = battleConfig?.GoldLossPercentage ?? 0.1f;
+                    int maxLoss = battleConfig?.MaxGoldLoss ?? 100;
+                    int lostGold = Mathf.Min(Mathf.RoundToInt(m_Gold * lossPercentage), maxLoss);
                     if (lostGold > 0)
                     {
                         m_Gold -= lostGold;

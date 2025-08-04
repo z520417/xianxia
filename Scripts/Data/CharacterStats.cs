@@ -89,12 +89,36 @@ namespace XianXiaGame
         /// </summary>
         private void CalculateStatsForLevel()
         {
-            m_MaxHealth = 100 + (m_Level - 1) * 20;
-            m_MaxMana = 50 + (m_Level - 1) * 10;
-            m_Attack = 10 + (m_Level - 1) * 3;
-            m_Defense = 5 + (m_Level - 1) * 2;
-            m_Speed = 10 + (m_Level - 1) * 1;
-            m_ExperienceToNext = m_Level * 100;
+            // 使用配置管理器获取配置，如果配置不可用则使用默认值
+            var config = ConfigManager.Instance?.Config?.CharacterStats;
+            
+            if (config != null)
+            {
+                m_MaxHealth = config.BaseHealth + (m_Level - 1) * config.HealthPerLevel;
+                m_MaxMana = config.BaseMana + (m_Level - 1) * config.ManaPerLevel;
+                m_Attack = config.BaseAttack + (m_Level - 1) * config.AttackPerLevel;
+                m_Defense = config.BaseDefense + (m_Level - 1) * config.DefensePerLevel;
+                m_Speed = config.BaseSpeed + (m_Level - 1) * config.SpeedPerLevel;
+                m_ExperienceToNext = m_Level * config.ExperiencePerLevel;
+                
+                // 设置暴击相关属性
+                m_CriticalRate = config.BaseCriticalRate;
+                m_CriticalDamage = config.BaseCriticalDamage;
+            }
+            else
+            {
+                // 配置不可用时的默认值（保持向后兼容）
+                m_MaxHealth = 100 + (m_Level - 1) * 20;
+                m_MaxMana = 50 + (m_Level - 1) * 10;
+                m_Attack = 10 + (m_Level - 1) * 3;
+                m_Defense = 5 + (m_Level - 1) * 2;
+                m_Speed = 10 + (m_Level - 1) * 1;
+                m_ExperienceToNext = m_Level * 100;
+                m_CriticalRate = 0.05f;
+                m_CriticalDamage = 1.5f;
+                
+                Debug.LogWarning("CharacterStats: 配置管理器不可用，使用默认配置");
+            }
         }
         #endregion
 

@@ -84,9 +84,9 @@ namespace XianXiaGame
 
         #region 战斗配置
         [Header("战斗配置")]
-        [SerializeField] private float m_ActionDelay = 1f;         // 动作延迟时间
-        [SerializeField] private float m_EscapeChance = 0.7f;      // 逃跑成功率
-        [SerializeField] private int m_DefenseReduction = 50;      // 防御时伤害减少百分比
+        [SerializeField] private float m_ActionDelay = 1f;         // 动作延迟时间（可被配置覆盖）
+        [SerializeField] private float m_EscapeChance = 0.7f;      // 逃跑成功率（可被配置覆盖）
+        [SerializeField] private int m_DefenseReduction = 50;      // 防御时伤害减少百分比（可被配置覆盖）
         #endregion
 
         #region 关联系统
@@ -143,6 +143,23 @@ namespace XianXiaGame
             if (m_EquipmentManager == null)
             {
                 m_EquipmentManager = FindObjectOfType<EquipmentManager>();
+            }
+            
+            // 从配置更新战斗参数
+            UpdateConfigValues();
+        }
+
+        /// <summary>
+        /// 从配置管理器更新战斗参数
+        /// </summary>
+        private void UpdateConfigValues()
+        {
+            var config = ConfigManager.Instance?.Config?.Battle;
+            if (config != null)
+            {
+                m_ActionDelay = config.ActionDelay;
+                m_EscapeChance = config.EscapeChance;
+                m_DefenseReduction = config.DefenseReduction;
             }
         }
         #endregion
@@ -512,7 +529,8 @@ namespace XianXiaGame
         /// </summary>
         private int CalculateExperienceReward(int _enemyLevel)
         {
-            int baseExp = 25;
+            var config = ConfigManager.Instance?.Config?.Battle;
+            int baseExp = config?.BaseExperienceReward ?? 25;
             int levelMultiplier = _enemyLevel;
             return baseExp * levelMultiplier;
         }
@@ -530,8 +548,11 @@ namespace XianXiaGame
             // 创建敌人属性
             CharacterStats enemyStats = new CharacterStats(_level);
             
-            // 根据等级调整敌人属性
-            float difficultyMultiplier = UnityEngine.Random.Range(0.8f, 1.2f);
+            // 根据等级调整敌人属性（使用配置中的范围）
+            var config = ConfigManager.Instance?.Config?.Battle;
+            float minMultiplier = config?.EnemyDifficultyMin ?? 0.8f;
+            float maxMultiplier = config?.EnemyDifficultyMax ?? 1.2f;
+            float difficultyMultiplier = UnityEngine.Random.Range(minMultiplier, maxMultiplier);
             enemyStats.ModifyStats(difficultyMultiplier, difficultyMultiplier, difficultyMultiplier, difficultyMultiplier);
 
             return new BattleParticipant(enemyName, enemyStats, false);
@@ -546,8 +567,10 @@ namespace XianXiaGame
         {
             List<ItemData> rewards = new List<ItemData>();
 
-            // 50%概率获得物品奖励
-            if (UnityEngine.Random.Range(0f, 1f) < 0.5f)
+            // 根据配置概率获得物品奖励
+            var config = ConfigManager.Instance?.Config?.Battle;
+            float itemChance = config?.ItemRewardChance ?? 0.5f;
+            if (UnityEngine.Random.Range(0f, 1f) < itemChance)
             {
                 RandomItemGenerator itemGenerator = RandomItemGenerator.Instance;
                 if (itemGenerator != null)
